@@ -1,0 +1,60 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+  <!doctype html>
+  <html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Power Bi</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      #pbi {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="pbi">Carregando Dashboard...</div>
+
+    <script src="powerbi.min.js"></script>
+
+    <script>
+      (async function () {
+        const SPRING_BASE_URL = "https://pbi-api.lucavila.com.br";
+        const res = await fetch(SPRING_BASE_URL + "/api/powerbi/embed-config", {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+
+        if (!res.ok) throw new Error("Falha ao obter embed-config (HTTP " + res.status + ")");
+        const cfg = await res.json();
+
+        const models = window['powerbi-client'].models;
+        const container = document.getElementById("pbi");
+
+        const embedConfig = {
+          type: "report",
+          id: cfg.reportId,
+          embedUrl: cfg.embedUrl,
+          accessToken: cfg.embedToken,
+          tokenType: models.TokenType.Embed
+        };
+
+        window.powerbi.reset(container);
+        window.powerbi.embed(container, embedConfig);
+      })().catch(err => {
+        document.getElementById("pbi").innerText = err.message;
+        console.error(err);
+      });
+    </script>
+
+  </body>
+
+  </html>

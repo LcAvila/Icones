@@ -1,0 +1,10 @@
+com\example\demo\config\PowerBiProperties.class
+com\example\demo\dto\EmbedConfigResponse.class
+com\example\demo\DemoApplication.class
+com\example\demo\controller\PowerBiController.class
+com\example\demo\service\PowerBiEmbedService.class
+com\example\demo\dto\AadTokenResponse.class
+com\example\demo\dto\GenerateTokenRequestV2.class
+com\example\demo\dto\GenerateTokenResponse.class
+com\example\demo\config\CorsConfig.class
+com\example\demo\dto\GenerateTokenRequestV2$IdRef.class

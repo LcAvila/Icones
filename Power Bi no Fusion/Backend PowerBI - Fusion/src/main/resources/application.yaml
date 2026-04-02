@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+powerbi:
+  tenant-id: 3f10e4c1-017c-4792-b163-689277d3e2cb
+  client-id: 7105484f-aafc-4076-86b5-861d088e3761
+  client-secret: ${POWERBI_CLIENT_SECRET}
+  workspace-id: 165baa58-9c67-458a-a6b9-ec4e2748b942
+  report-id: f1a4939f-a49f-440d-809a-10953be99833
+  dataset-id: d2aaba73-8b41-4d56-a093-072ea935f5ad

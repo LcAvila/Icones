@@ -1,0 +1,89 @@
+  <!doctype html>
+  <html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Dashboard</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      #pbi {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="pbi">Carregando Dashboard...</div>
+
+    <script src="powerbi.min.js"></script>
+
+    <script>
+      (async function () {
+        const SPRING_BASE_URL = "https://pbi-api.lucavila.com.br";
+        const res = await fetch(SPRING_BASE_URL + "/api/powerbi/embed-config", {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+
+        if (!res.ok) throw new Error("Falha ao obter embed-config (HTTP " + res.status + ")");
+        const cfg = await res.json();
+
+        const models = window['powerbi-client'].models;
+        const container = document.getElementById("pbi");
+
+        const embedConfig = {
+          type: "report",
+          id: cfg.reportId,
+          embedUrl: cfg.embedUrl,
+          accessToken: cfg.embedToken,
+          tokenType: models.TokenType.Embed
+        };
+
+        window.powerbi.reset(container);
+        window.powerbi.embed(container, embedConfig);
+      })().catch(err => {
+        console.error(err);
+        // If a network/fetch error occurs, load the friendly fallback page (loading.html)
+        (async function showFallback() {
+          try {
+            const resp = await fetch('loading.html');
+            if (!resp.ok) {
+              document.getElementById('pbi').innerText = err.message;
+              return;
+            }
+            const html = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Merge title
+            if (doc.title) document.title = doc.title;
+
+            // Append styles and links from loading.html to current head (avoid removing existing assets)
+            Array.from(doc.head.childNodes).forEach(node => {
+              // Only import style/link/meta elements to avoid re-executing scripts
+              if (node.nodeName === 'STYLE' || node.nodeName === 'LINK' || node.nodeName === 'META' || node.nodeName === 'TITLE') {
+                document.head.appendChild(document.importNode(node, true));
+              }
+            });
+
+            // Replace body content with the fallback body
+            document.body.innerHTML = doc.body.innerHTML;
+          } catch (e) {
+            // If even loading the fallback fails, show the error text
+            document.getElementById('pbi').innerText = err.message || String(e);
+            console.error(e);
+          }
+        })();
+      });
+    </script>
+
+  </body>
+
+  </html>
